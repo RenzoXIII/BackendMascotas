@@ -22,7 +22,7 @@ import {
 } from '@loopback/rest';
 import {Credenciales, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
-import { AutenticacionService } from '../services';
+import { AutenticacionService, NotificacionService } from '../services';
 const fetch = require('node-fetch');
 
 export class UsuarioController {
@@ -30,7 +30,9 @@ export class UsuarioController {
     @repository(UsuarioRepository)
     public usuarioRepository : UsuarioRepository,
     @service(AutenticacionService)
-    public servicioAutenticacion : AutenticacionService
+    public servicioAutenticacion : AutenticacionService,
+    @service(NotificacionService)
+    public servicioNotificacion: NotificacionService
   ) {}
 
   @post('/identificarUsuario',{
@@ -90,10 +92,11 @@ export class UsuarioController {
     A continución encontraras los credenciales para iniciar sesión en el sitio, estos serán utilizados únicamente con este fin, siguiendo los lineamientos de Protección de datos.<br>
     Asegurese de guardarlos de forma segura y recuerde que no le seran solicitados por otros medios.
     <br><br>Usuario: ${usuario.correo}<br>Contraseña: ${contrasena}`;
-    fetch(`http:127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
-      .then((data:any)=>{
-        console.log(data);
-      })
+    this.servicioNotificacion.enviarCorreo(destino, asunto, contenido);
+    //fetch(`http:127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
+    //  .then((data:any)=>{
+    //    console.log(data);
+    //  })
     return p;
   }
 
@@ -207,10 +210,12 @@ export class UsuarioController {
     A continución encontraras tus nuevos credenciales para iniciar sesión en el sitio, estos serán utilizados únicamente con este fin, siguiendo los lineamientos de Protección de datos.<br>
     Asegurese de guardarlos de forma segura y recuerde que no le seran solicitados por otros medios.
     <br><br>Usuario: ${usuario.correo}<br>Nueva Contraseña: ${contrasena}`;
-    fetch(`http:127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
-      .then((data:any)=>{
-        console.log(data);
-      })
+    this.servicioNotificacion.enviarCorreo(destino, asunto, contenido);
+
+    //fetch(`http:127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
+    //  .then((data:any)=>{
+    //    console.log(data);
+    //  })
     return p;
   }
 

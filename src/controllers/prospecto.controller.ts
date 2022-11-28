@@ -1,3 +1,5 @@
+import {service} from '@loopback/core';
+
 import {
   Count,
   CountSchema,
@@ -20,11 +22,14 @@ import {
 import fetch from 'node-fetch';
 import {Prospecto} from '../models';
 import {ProspectoRepository} from '../repositories';
+import {NotificacionService} from '../services';
 
 export class ProspectoController {
   constructor(
     @repository(ProspectoRepository)
     public prospectoRepository : ProspectoRepository,
+    @service(NotificacionService)
+    public servicioNotificacion: NotificacionService
   ) {}
 
   @post('/prospectos')
@@ -77,11 +82,12 @@ export class ProspectoController {
     <br>Mensaje: ${mensaje}`;
 
     let destino = 'acamachoxiii@gmail.com';
+    this.servicioNotificacion.enviarCorreo(destino, asunto, contenido);
 
-    fetch(`http:127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
-      .then((data:any)=>{
-        console.log(data);
-      })
+    //fetch(`http:127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
+    //  .then((data:any)=>{
+    //    console.log(data);
+    //  })
     return prospecto;
   }
 

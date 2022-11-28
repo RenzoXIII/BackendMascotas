@@ -1,3 +1,5 @@
+import {service} from '@loopback/core';
+
 import {
   Count,
   CountSchema,
@@ -21,6 +23,7 @@ import fetch from 'node-fetch';
 import {Mascota} from '../models';
 import {MascotaRepository} from '../repositories';
 import {UsuarioRepository} from '../repositories';
+import {NotificacionService} from '../services';
 
 export class MascotaController {
   constructor(
@@ -28,6 +31,8 @@ export class MascotaController {
     public mascotaRepository : MascotaRepository,
     @repository(UsuarioRepository)
     public usuarioRepository : UsuarioRepository,
+    @service(NotificacionService)
+    public servicioNotificacion: NotificacionService
   ) {}
 
   @post('/mascotas')
@@ -139,10 +144,13 @@ export class MascotaController {
     let asunto = 'Notificación sobre el estado de su Solicitud de Afiliación - Pawmi'
     let contenido = `Hola ${dueno.nombre}, nos permitimos informarle que su Solicitud de Afiliación para ${mascota.nombre} ha sido actualizada.
     <br>Estado: ${mascota.estado} <br>Comentarios: ${mascota.comentario}`;
-    fetch(`http:127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
-      .then((data:any)=>{
-        console.log(data);
-      })
+
+    this.servicioNotificacion.enviarCorreo(destino, asunto, contenido);
+
+    //fetch(`http:127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
+    //  .then((data:any)=>{
+    //    console.log(data);
+    //  })
     return p;
   }
 
